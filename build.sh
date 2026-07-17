@@ -27,7 +27,7 @@ optimization_map["sha_ni"]="--enable-shani"
 
 declare -A optimization_flag_map
 optimization_flag_map["avx2"]="-mavx2"
-optimization_flag_map["avx512"]="-mavx512"
+optimization_flag_map["avx512"]="-mavx512f"
 optimization_flag_map["sse4_1"]="-msse4.1"
 optimization_flag_map["sha_ni"]="-msha"
 
