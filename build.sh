@@ -60,25 +60,27 @@ install_dir=$(dirname "$(pwd)")/install
 #shellcheck disable="SC2086"
 
 for project in ${projects}; do
-    pushd "${project}/builds/gnu" > /dev/null
-    set +e
+    if [ "${project}" != "libbitcoin-build" ]; then
+        pushd "${project}/builds/gnu" > /dev/null
+        set +e
 
-    if [ -f autogen.sh ]; then
-        bash autogen.sh
+        if [ -f autogen.sh ]; then
+            bash autogen.sh
+        fi
+        aclocal
+        autoconf
+        autoreconf -i
+        automake --add-missing
+        automake
+        make clean
+        set -e
+
+        CC=gcc CXX=g++ CFLAGS=${OPTIMIZATION_FLAGS} CXXFLAGS=${OPTIMIZATION_FLAGS} PKG_CONFIG_PATH="${install_dir}/lib/pkgconfig" BOOST_ROOT="${install_dir}" ./configure --with-tests --with-examples --with-pkgconfigdir="${install_dir}/lib/pkgconfig" --prefix="${install_dir}" --with-boost="${install_dir}" --with-icu --with-qrencode --with-png --with-ultrafast --enable-static --disable-shared ${OPTIMIZATIONS}
+
+        make -j "${PARALLEL}"
+        make install
+        popd > /dev/null # project
     fi
-    aclocal
-    autoconf
-    autoreconf -i
-    automake --add-missing
-    automake
-    make clean
-    set -e
-
-    CC=gcc CXX=g++ CFLAGS=${OPTIMIZATION_FLAGS} CXXFLAGS=${OPTIMIZATION_FLAGS} PKG_CONFIG_PATH="${install_dir}/lib/pkgconfig" BOOST_ROOT="${install_dir}" ./configure --with-tests --with-examples --with-pkgconfigdir="${install_dir}/lib/pkgconfig" --prefix="${install_dir}" --with-boost="${install_dir}" --with-icu --with-qrencode --with-png --with-ultrafast --enable-static --disable-shared ${OPTIMIZATIONS}
-
-    make -j "${PARALLEL}"
-    make install
-    popd > /dev/null # project
 done
 
 popd # source
