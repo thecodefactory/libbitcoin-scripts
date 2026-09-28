@@ -20,21 +20,29 @@ fi
 # Autodetect optimization flags
 # --------------------------------------------------------
 declare -A optimization_map
+optimization_map["avxifma"]="--enable-avxifma"
 optimization_map["avx2"]="--enable-avx2"
 optimization_map["avx512"]="--enable-avx512"
+optimization_map["avx512ifma"]="--enable-avx512ifma"
 optimization_map["sse4_1"]="--enable-sse41"
 optimization_map["sha_ni"]="--enable-shani"
+optimization_map["aes"]="--enable-aesni"
+optimization_map["vaes"]="--enable-vaes"
 
 declare -A optimization_flag_map
+#optimization_flag_map["avxifma"]="-mavxifma"
 optimization_flag_map["avx2"]="-mavx2"
 optimization_flag_map["avx512"]="-mavx512f"
+#optimization_flag_map["avx512ifma"]="-mavx512ifma"
 optimization_flag_map["sse4_1"]="-msse4.1"
 optimization_flag_map["sha_ni"]="-msha"
+optimization_flag_map["aes"]="-maes"
+optimization_flag_map["vaes"]="-mvaes"
 
 OPTIMIZATIONS=""
 OPTIMIZATION_FLAGS=""
 
-optimization_flags_all="avx2 avx512 sha_ni sse4_1"
+optimization_flags_all="avx2 avx512 sse4_1 sha_ni aes vaes"
 for flag in ${optimization_flags_all}; do
     if grep -q "$flag" /proc/cpuinfo; then
         OPTIMIZATIONS="${OPTIMIZATIONS} ${optimization_map[${flag}]}"
